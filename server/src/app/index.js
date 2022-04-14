@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
-import * as Config from './default';
+import * as Config from '../config';
 
 // App Configuration
 const app = express();

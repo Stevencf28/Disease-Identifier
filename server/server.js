@@ -1,7 +1,9 @@
+import { ApolloServer } from 'apollo-server-express';
 import debug from 'debug';
-import app from './config/app';
-import { DefaultPort } from './config/default';
-import { normalizePort } from './utils/index';
+import app from './src/app/index';
+import { DefaultPort } from './src/config/index';
+import schema from './src/graphql/schema';
+import { normalizePort } from './src/utils/index';
 
 debug('group1-comp308-project');
 
@@ -11,3 +13,14 @@ app.set('port', port);
 app.listen({ port }, () => {
   console.log(`Server ready at ${port}`);
 })
+
+const startServer = async () => {
+  const server = new ApolloServer({
+    schema: schema
+  });
+
+  await server.start();
+  server.applyMiddleware({ app, cors: false })
+};
+
+startServer();
