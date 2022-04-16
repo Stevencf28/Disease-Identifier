@@ -5,25 +5,43 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
-import { userType } from './types/user';
+import jwt from 'jsonwebtoken'
+import userType from './types/user'; // User Type
+import User from './models/User'; // User Model
+import { secretKey } from '../config';
+const jwtKey = secretKey;
 
 const queryType = new GraphQLObjectType({
   name: 'Query',
   fields: () => {
     return {
-      tests: {
+      users: {
         type: new GraphQLList(userType),
-        resolve: (root, params, context) => {
-          const user = {
-            _id: 'dummy_id',
-            firstName: 'dummy',
-            lastName: 'user',
-            phone: '1234567890',
-            email: 'dummy@email.com',
-            type: 'nurse'
-          };
-
-          return [user]
+        resolve: () => {
+          const users = User.find().exec()
+          if(!users){
+            throw new Error('Cannot find users')
+          }
+          return users
+        }
+      },
+      user: {
+        type: userType,
+        args:{
+          userName:{
+            type: GraphQLString
+          }
+        },
+        resolve: (root, params) => {
+          return User.findOne({userName: params.userName}, (err, user) =>{
+            if (err) {
+              throw new Error("Error")
+            }
+            if(!user){
+              throw new Error("User not found")
+            }
+            return user
+          });
         }
       }
     }
@@ -35,9 +53,12 @@ const mutationType = new GraphQLObjectType({
   fields: () => {
     return {
       register: {
-        type: GraphQLString,
+        type: userType,
         args: {
-          username: {
+          userName: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          password: {
             type: new GraphQLNonNull(GraphQLString)
           },
           firstName: {
@@ -54,22 +75,25 @@ const mutationType = new GraphQLObjectType({
           },
           type: {
             type: new GraphQLNonNull(GraphQLString)
-          },
-          password: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          confirm: {
-            type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: (root, params, context) => {
-          return 'Register'
+        resolve: async (root, params, context) => {
+          try {
+            const user = new User(params);
+            const newUser = user.save();
+            if (!newUser){
+              throw new Error('Error Creating User');
+            }
+            return newUser
+          } catch (e) {
+            console.log(e)
+          }
         }
       },
       signIn: {
-        type: GraphQLString,
+        type: userType,
         args: {
-          username: {
+          userName: {
             type: new GraphQLNonNull(GraphQLString)
           },
           password: {
@@ -77,13 +101,29 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: (root, params, context) => {
-          return 'Sign In'
+          try {
+            return User.findOne({userName: params.userName}, (err, user) =>{
+              if (!user){
+                throw new Error("Wrong username or password.")
+              } else {
+                if (user.authenticate(params.password)){
+                  const token = jwt.sign({id: user._id, userName: user.userName, type: user.type}, jwtKey,
+                    {algorithm: 'HS256', expiresIn: 300});
+                  return user._id
+                } else {
+                  throw new Error("Wrong username or password.")
+                }
+              } 
+            })
+          } catch (e){
+            console.log(e)
+          }
         }
       },
       logout: {
         type: GraphQLString,
         resolve: (root, params, context) => {
-          return 'Logout'
+          return 'Logout should be done by calling the apollo logout function'
         }
       },
     }
