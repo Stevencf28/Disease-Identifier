@@ -1,8 +1,8 @@
 import {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLDate
 } from 'graphql';
-var GraphQLDate = require('graphql-date');
 
 export const vitalsSign = new GraphQLObjectType({
   name: 'vitals',

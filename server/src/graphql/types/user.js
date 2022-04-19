@@ -30,9 +30,6 @@ export const userType = new GraphQLObjectType({
       },
       type: {
         type: GraphQLString
-      },
-      password: {
-        type: GraphQLString
       }
     }
   }
