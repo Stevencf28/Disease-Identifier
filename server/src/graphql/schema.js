@@ -5,11 +5,16 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
+
 import jwt from 'jsonwebtoken'
-import userType from './types/user'; // User Type
-import User from './models/User'; // User Model
-import { secretKey } from '../config';
 const jwtKey = secretKey;
+import { secretKey } from '../config';
+
+// GraphQLObjectTypes
+import userType from './types/user'; // User Type
+
+// Models
+import User from './models/User'; // User Model
 
 const queryType = new GraphQLObjectType({
   name: 'Query',
