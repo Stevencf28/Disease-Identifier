@@ -1,35 +1,37 @@
 import {
   GraphQLObjectType,
-  GraphQLString
+  GraphQLString,
+  GraphQLDate
 } from 'graphql';
 
-export const userType = new GraphQLObjectType({
-  name: 'user',
+
+export const dailyInfo = new GraphQLObjectType({
+  name: 'patientDailyInfo',
   fields: () => {
     return {
       _id: {
         type: GraphQLString
       },
-      userName: {
+      patientUserName: {
         type: GraphQLString
       },
-      password:{
+      temperature: {
         type: GraphQLString
       },
-      firstName: {
+      heartRate: {
         type: GraphQLString
       },
-      lastName: {
+      weight: {
         type: GraphQLString
       },
-      phone: {
+      bloodPressure: {
         type: GraphQLString
       },
-      email: {
+      respiratoryRate: {
         type: GraphQLString
       },
-      type: {
-        type: GraphQLString
+      measuredDate: {
+        type: GraphQLDate
       }
     }
   }
