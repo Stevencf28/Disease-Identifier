@@ -3,11 +3,9 @@ import {
   GraphQLString
 } from 'graphql';
 import { GraphQLDate } from 'graphql-scalars';
-import { userType } from './user';
+import UserType from './user';
 
-
-
-export const dailyInfo = new GraphQLObjectType({
+const DailyInfo = new GraphQLObjectType({
   name: 'patientDailyInfo',
   fields: () => {
     return {
@@ -15,7 +13,7 @@ export const dailyInfo = new GraphQLObjectType({
         type: GraphQLString
       },
       patient: {
-        type: userType
+        type: UserType
       },
       temperature: {
         type: GraphQLString
@@ -38,3 +36,5 @@ export const dailyInfo = new GraphQLObjectType({
     }
   }
 });
+
+export default DailyInfo;

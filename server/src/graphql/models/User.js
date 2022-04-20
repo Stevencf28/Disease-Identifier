@@ -1,6 +1,6 @@
 // Load the module dependencies
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 const saltRounds = 10;
 
 const Schema = mongoose.Schema;
@@ -41,4 +41,6 @@ UserSchema.set('toJSON', {
 	virtuals: true
 });
 
-module.exports = mongoose.model('User', UserSchema);
+const Model = mongoose.model('User', UserSchema);
+
+export default Model;

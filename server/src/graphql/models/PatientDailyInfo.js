@@ -1,5 +1,5 @@
 // Load the module dependencies
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -17,4 +17,6 @@ var PatientDailyInfoSchema = new Schema({
     measuredDate: String
 });
 
-module.exports = mongoose.model('PatientDailyInfo', PatientDailyInfoSchema);
+const Model = mongoose.model('PatientDailyInfo', PatientDailyInfoSchema);
+
+export default Model;

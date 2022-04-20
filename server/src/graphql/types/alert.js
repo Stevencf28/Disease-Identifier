@@ -2,9 +2,9 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
-import { userType } from './user';
+import UserType from './user';
 
-export const emergencyAlert = new GraphQLObjectType({
+const emergencyAlert = new GraphQLObjectType({
   name: 'alert',
   fields: () => {
     return {
@@ -12,7 +12,7 @@ export const emergencyAlert = new GraphQLObjectType({
         type: GraphQLString
       },
       patient: {
-        type: userType
+        type: UserType
       },
       message: {
         type: GraphQLString
@@ -20,3 +20,5 @@ export const emergencyAlert = new GraphQLObjectType({
     }
   }
 });
+
+export default emergencyAlert;

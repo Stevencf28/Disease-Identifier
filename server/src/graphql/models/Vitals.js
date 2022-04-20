@@ -1,5 +1,5 @@
 // Load the module dependencies
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -21,4 +21,6 @@ var VitalsSchema = new Schema({
     visitDate: String
 });
 
-module.exports = mongoose.model('Vitals', VitalsSchema);
+const Model = mongoose.model('Vitals', VitalsSchema);
+
+export default Model;

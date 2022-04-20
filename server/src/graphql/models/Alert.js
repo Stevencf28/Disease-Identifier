@@ -1,5 +1,5 @@
 // Load the module dependencies
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -12,4 +12,6 @@ var AlertSchema = new Schema({
     message: String
 });
 
-module.exports = mongoose.model('Alert', AlertSchema);
+const Model = mongoose.model('Alert', AlertSchema);
+
+export default Model;

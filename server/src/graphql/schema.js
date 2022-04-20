@@ -5,16 +5,16 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
-import { GraphQLDate, GraphQLEmailAddress, GraphQLNonEmptyString } from 'graphql-scalars';
+import { GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
 import jwt from 'jsonwebtoken'
 const jwtKey = secretKey;
 import { secretKey } from '../config';
 
 // GraphQLObjectTypes
-import userType from './types/user'; // User Type
-import alertType from './types/alert'; // Alert Type
-import patientDailyInfoType from './types/patientDailyInfo'; // PatientDailyInfo Type
-import vitalsType from './types/vitals'; // Vitals Type
+import UserType from './types/user'; // User Type
+import AlertType from './types/alert'; // Alert Type
+import PatientDailyInfoType from './types/patientDailyInfo'; // PatientDailyInfo Type
+import VitalsType from './types/vitals'; // Vitals Type
 
 // Models
 import User from './models/User'; // User Model
@@ -28,7 +28,7 @@ const queryType = new GraphQLObjectType({
     return {
       // User queries
       users: {
-        type: new GraphQLList(userType),
+        type: new GraphQLList(UserType),
         resolve: () => {
           const users = User.find().exec()
           if(!users){
@@ -38,7 +38,7 @@ const queryType = new GraphQLObjectType({
         }
       },
       user: {
-        type: userType,
+        type: UserType,
         args:{
           userName:{
             type: GraphQLString
@@ -58,7 +58,7 @@ const queryType = new GraphQLObjectType({
       },
       // Alert Queries
       alerts: {
-        type: new GraphQLList(alertType),
+        type: new GraphQLList(AlertType),
         resolve: () => {
           const alerts = Alert.find().exec()
           if(!alerts){
@@ -68,7 +68,7 @@ const queryType = new GraphQLObjectType({
         }
       },
       alert: {
-        type: alertType,
+        type: AlertType,
         args:{
           _id:{
             type: GraphQLString
@@ -88,7 +88,7 @@ const queryType = new GraphQLObjectType({
       },
       // PatientDailyInfo Queries
       patientDailyInfos: {
-        type: new GraphQLList(patientDailyInfoType),
+        type: new GraphQLList(PatientDailyInfoType),
         resolve: () => {
           const patientDailyInfos = PatientDailyInfo.find().exec()
           if(!patientDailyInfos){
@@ -98,7 +98,7 @@ const queryType = new GraphQLObjectType({
         }
       },
       patientDailyInfo: {
-        type: patientDailyInfoType,
+        type: PatientDailyInfoType,
         args:{
           _id:{
             type: GraphQLString
@@ -118,7 +118,7 @@ const queryType = new GraphQLObjectType({
       },
       // Vitals Queries
       vitals: {
-        type: new GraphQLList(vitalsType),
+        type: new GraphQLList(VitalsType),
         resolve: () => {
           const vitals = Vitals.find().exec()
           if(!vitals){
@@ -128,7 +128,7 @@ const queryType = new GraphQLObjectType({
         }
       },
       vital: {
-        type: vitalsType,
+        type: VitalsType,
         args:{
           _id:{
             type: GraphQLString
@@ -156,7 +156,7 @@ const mutationType = new GraphQLObjectType({
     return {
       // User Mutations
       register: {
-        type: userType,
+        type: UserType,
         args: {
           userName: {
             type: new GraphQLNonNull(GraphQLString)
@@ -194,7 +194,7 @@ const mutationType = new GraphQLObjectType({
         }
       },
       signIn: {
-        type: userType,
+        type: UserType,
         args: {
           userName: {
             type: new GraphQLNonNull(GraphQLString)
@@ -225,10 +225,13 @@ const mutationType = new GraphQLObjectType({
       },
       // Alert Mutations
       createAlert: {
-        type: alertType,
+        type: AlertType,
         args: {
-          patient: {
-            type: new GraphQLNonNull(userType)
+          patientId: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          nurseId: {
+            type: new GraphQLNonNull(GraphQLString)
           },
           message: {
             type: new GraphQLNonNull(GraphQLString)
@@ -249,10 +252,10 @@ const mutationType = new GraphQLObjectType({
       },
       // PatientDailyInfo Mutations
       createPatientDailyInfo: {
-        type: patientDailyInfoType,
+        type: PatientDailyInfoType,
         args: {
-          patient: {
-            type: new GraphQLNonNull(userType)
+          patientId: {
+            type: new GraphQLNonNull(GraphQLString)
           },
           temperature: {
             type: new GraphQLNonNull(GraphQLString)
@@ -288,13 +291,13 @@ const mutationType = new GraphQLObjectType({
       },
       // Vitals Mutations
       createVitals: {
-        type: vitalsType,
+        type: VitalsType,
         args: {
-          nurse: {
-            type: new GraphQLNonNull(userType)
+          nurseId: {
+            type: new GraphQLNonNull(GraphQLString)
           },
-          patient: {
-            type: new GraphQLNonNull(userType)
+          patientId: {
+            type: new GraphQLNonNull(GraphQLString)
           },
           temperature: {
             type: new GraphQLNonNull(GraphQLString)
