@@ -51,6 +51,20 @@ const queryType = new GraphQLObjectType({
           return user;
         }
       },
+      patients: {
+        type: new GraphQLList(UserType),
+        resolve: () => {
+          const users = User.find({type: "Patient"}).exec()
+          return users
+        }
+      },
+      nurses: {
+        type: new GraphQLList(UserType),
+        resolve: () => {
+          const users = User.find({type: "Nurse"}).exec()
+          return users
+        }
+      },
       // Alert Queries
       alerts: {
         type: new GraphQLList(AlertType),
