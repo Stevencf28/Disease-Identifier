@@ -40,12 +40,12 @@ const queryType = new GraphQLObjectType({
       user: {
         type: UserType,
         args:{
-          userName:{
+          username:{
             type: GraphQLString
           }
         },
         resolve: (root, params) => {
-          return User.findOne({userName: params.userName}, (err, user) =>{
+          return User.findOne({username: params.username}, (err, user) =>{
             if (err) {
               throw new Error("Error")
             }
@@ -158,7 +158,7 @@ const mutationType = new GraphQLObjectType({
       register: {
         type: UserType,
         args: {
-          userName: {
+          username: {
             type: new GraphQLNonNull(GraphQLString)
           },
           password: {
@@ -196,7 +196,7 @@ const mutationType = new GraphQLObjectType({
       signIn: {
         type: UserType,
         args: {
-          userName: {
+          username: {
             type: new GraphQLNonNull(GraphQLString)
           },
           password: {
@@ -205,12 +205,12 @@ const mutationType = new GraphQLObjectType({
         },
         resolve: (root, params, context) => {
           try {
-            return User.findOne({userName: params.userName}, (err, user) =>{
+            return User.findOne({username: params.username}, (err, user) =>{
               if (!user){
                 throw new Error("Wrong username or password.")
               } else {
                 if (user.authenticate(params.password)){
-                  const token = jwt.sign({id: user._id, userName: user.userName, type: user.type}, jwtKey,
+                  const token = jwt.sign({id: user._id, username: user.username, type: user.type}, jwtKey,
                     {algorithm: 'HS256', expiresIn: 300});
                   return user._id
                 } else {

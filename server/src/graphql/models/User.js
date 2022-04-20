@@ -6,23 +6,23 @@ const saltRounds = 10;
 const Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    userName: {
+    username: {
         type: String,
         unique: true,
         required: 'Username is required',
     },
-    password: {
-        type: String,
-        required: 'Password is required'
-    },
-    firstName: String,
-    lastName: String,
-    phone: String,
     email: {
         type: String,
         match: [/.+\@.+\..+/, "Please enter a valid email address."]
     },
-    type: String
+    firstName: String,
+    lastName: String,
+    phone: String,
+    type: String,
+    password: {
+        type: String,
+        required: 'Password is required'
+    }
 });
 
 // encrypt password before saving

@@ -10,10 +10,7 @@ const UserType = new GraphQLObjectType({
       _id: {
         type: GraphQLString
       },
-      userName: {
-        type: GraphQLString
-      },
-      password:{
+      username: {
         type: GraphQLString
       },
       firstName: {
@@ -30,7 +27,10 @@ const UserType = new GraphQLObjectType({
       },
       type: {
         type: GraphQLString
-      }
+      },
+      password:{
+        type: GraphQLString
+      },
     }
   }
 });
