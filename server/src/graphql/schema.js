@@ -5,7 +5,7 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
-
+import { GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
 import jwt from 'jsonwebtoken'
 const jwtKey = secretKey;
 import { secretKey } from '../config';
@@ -76,7 +76,7 @@ const mutationType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString)
           },
           email: {
-            type: new GraphQLNonNull(GraphQLString)
+            type: new GraphQLNonNull(GraphQLEmailAddress)
           },
           type: {
             type: new GraphQLNonNull(GraphQLString)
