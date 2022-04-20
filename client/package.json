@@ -3,21 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-<<<<<<< HEAD
     "@apollo/client": "^3.5.10",
-=======
->>>>>>> 99949378adc8fbdf4ead4793d77a694c63e0c86a
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
     "react": "^18.0.0",
-<<<<<<< HEAD
     "react-bootstrap": "^2.3.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",
-=======
-    "react-dom": "^18.0.0",
->>>>>>> 99949378adc8fbdf4ead4793d77a694c63e0c86a
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
