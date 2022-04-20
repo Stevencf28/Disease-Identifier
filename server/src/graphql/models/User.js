@@ -1,7 +1,7 @@
 // Load the module dependencies
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-const saltRounds = 10;
+import { saltRounds } from '../../config/index';
 
 const Schema = mongoose.Schema;
 
@@ -32,8 +32,8 @@ UserSchema.pre('save', function(next){
 });
 
 // check if password is identical
-UserSchema.methods.authenticate = function(password) {
-	return this.password === bcrypt.hashSync(password, saltRounds);
+UserSchema.methods.authenticate = function(password, hash) {
+	return bcrypt.compareSync(password, hash);
 };
 
 UserSchema.set('toJSON', {

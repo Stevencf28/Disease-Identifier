@@ -5,10 +5,12 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
-import { GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
+import { UserInputError } from 'apollo-server-express';
+import { ByteResolver, GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
 import jwt from 'jsonwebtoken'
 const jwtKey = secretKey;
-import { secretKey } from '../config';
+import bcrypt from 'bcrypt';
+import { secretKey, saltRounds } from '../config';
 
 // GraphQLObjectTypes
 import UserType from './types/user'; // User Type
@@ -194,7 +196,16 @@ const mutationType = new GraphQLObjectType({
         }
       },
       signIn: {
-        type: UserType,
+        type: new GraphQLObjectType({
+          name: 'loginResponse',
+          fields: () => {
+            return {
+              token: {
+                type: GraphQLString
+              }
+            }
+          }
+        }),
         args: {
           username: {
             type: new GraphQLNonNull(GraphQLString)
@@ -203,23 +214,22 @@ const mutationType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: (root, params, context) => {
-          try {
-            return User.findOne({username: params.username}, (err, user) =>{
-              if (!user){
-                throw new Error("Wrong username or password.")
-              } else {
-                if (user.authenticate(params.password)){
-                  const token = jwt.sign({id: user._id, username: user.username, type: user.type}, jwtKey,
-                    {algorithm: 'HS256', expiresIn: 300});
-                  return user._id
-                } else {
-                  throw new Error("Wrong username or password.")
-                }
-              } 
-            })
-          } catch (e){
-            console.log(e)
+        resolve: async (root, params, context) => {
+          const user = await User.findOne({ username: params.username });
+          if (!user){
+            throw new UserInputError("Wrong username or password.");
+          }
+
+          if (user.authenticate(params.password, user.password)){
+            const token = jwt.sign(
+              {id: user._id, username: user.username, type: user.type},
+              jwtKey,
+              {algorithm: 'HS256', expiresIn: 300}
+            );
+            console.log('token', token)
+            return { token }
+          } else {
+            throw new UserInputError("Wrong username or password.");
           }
         }
       },
