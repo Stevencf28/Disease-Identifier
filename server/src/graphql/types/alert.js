@@ -4,7 +4,7 @@ import {
 } from 'graphql';
 import UserType from './user';
 
-const emergencyAlert = new GraphQLObjectType({
+const Alert = new GraphQLObjectType({
   name: 'alert',
   fields: () => {
     return {
@@ -21,4 +21,4 @@ const emergencyAlert = new GraphQLObjectType({
   }
 });
 
-export default emergencyAlert;
+export default Alert;

@@ -43,16 +43,12 @@ const queryType = new GraphQLObjectType({
             type: GraphQLString
           }
         },
-        resolve: (root, params) => {
-          return User.findOne({username: params.username}, (err, user) =>{
-            if (err) {
-              throw new Error("Error")
-            }
-            if(!user){
-              throw new Error("User not found")
-            }
-            return user
-          });
+        resolve: async (root, params) => {
+          const user = await User.findOne({username: params.username});
+          if(!user)
+            throw new UserInputError('User not found');
+
+          return user;
         }
       },
       // Alert Queries
@@ -66,26 +62,18 @@ const queryType = new GraphQLObjectType({
           return alerts
         }
       },
-      alert: {
-        type: AlertType,
+      alertByPatient: {
+        type: new GraphQLList(AlertType),
         args:{
           _id:{
             type: GraphQLString
           }
         },
-        resolve: (root, params) => {
-          return Alert.findOne({_id: params._id}, (err, alert) =>{
-            if (err) {
-              throw new Error("Error")
-            }
-            if(!alert){
-              throw new Error("Alert not found")
-            }
-            return alert
-          });
+        resolve: async (root, params) => {
+          const alerts = await Alert.find({patient: params._id}).exec();
+          return alerts;
         }
       },
-      
       vitals: {
         type: new GraphQLList(VitalsType),
         resolve: () => {
@@ -96,23 +84,16 @@ const queryType = new GraphQLObjectType({
           return vitals
         }
       },
-      vital: {
-        type: VitalsType,
+      vitalByPatient: {
+        type: new GraphQLList(VitalsType),
         args:{
           _id:{
             type: GraphQLString
           }
         },
-        resolve: (root, params) => {
-          return Vitals.findOne({_id: params._id}, (err, vital) =>{
-            if (err) {
-              throw new Error("Error")
-            }
-            if(!vital){
-              throw new Error("Patient's vitals not found")
-            }
-            return vital
-          });
+        resolve: async (root, params) => {
+          const vitals = await Vitals.find({patient: params._id}).exec();
+          return vitals;
         }
       },
     }
