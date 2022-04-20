@@ -240,24 +240,23 @@ const mutationType = new GraphQLObjectType({
           patientId: {
             type: new GraphQLNonNull(GraphQLString)
           },
-          nurseId: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
           message: {
             type: new GraphQLNonNull(GraphQLString)
           }
         },
         resolve: async (root, params, context) => {
-          try {
-            const alert = new Alert(params);
-            const newAlert = alert.save();
-            if (!newAlert){
-              throw new Error('Error Creating Alert');
-            }
-            return newAlert
-          } catch (e){
-            console.log(e)
-          }
+          console.log('called')
+          const newAlert = new Alert({
+            message: params.message,
+            patient: params.patientId,
+          });
+          console.log('alert', newAlert)
+
+          const alert = Alert.create(newAlert);
+          if (!alert)
+            throw UserInputError('Error in Create Alert');
+
+          return alert;
         }
       },
       // PatientDailyInfo Mutations

@@ -9,11 +9,6 @@ var AlertSchema = new Schema({
         ref: 'User',
         required: 'PatientID is required'
     },
-    nurse: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: 'NurseID is required'
-    },
     message: String
 });
 
