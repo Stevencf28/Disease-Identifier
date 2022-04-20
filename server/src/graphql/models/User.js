@@ -1,28 +1,28 @@
 // Load the module dependencies
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import { saltRounds } from '../../config/index';
 
 const Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
-    userName: {
+    username: {
         type: String,
         unique: true,
         required: 'Username is required',
     },
-    password: {
-        type: String,
-        required: 'Password is required'
-    },
-    firstName: String,
-    lastName: String,
-    phone: String,
     email: {
         type: String,
         match: [/.+\@.+\..+/, "Please enter a valid email address."]
     },
-    type: String
+    firstName: String,
+    lastName: String,
+    phone: String,
+    type: String,
+    password: {
+        type: String,
+        required: 'Password is required'
+    }
 });
 
 // encrypt password before saving
@@ -32,8 +32,8 @@ UserSchema.pre('save', function(next){
 });
 
 // check if password is identical
-UserSchema.methods.authenticate = function(password) {
-	return this.password === bcrypt.hashSync(password, saltRounds);
+UserSchema.methods.authenticate = function(password, hash) {
+	return bcrypt.compareSync(password, hash);
 };
 
 UserSchema.set('toJSON', {
@@ -41,4 +41,6 @@ UserSchema.set('toJSON', {
 	virtuals: true
 });
 
-module.exports = mongoose.model('User', UserSchema);
+const Model = mongoose.model('User', UserSchema);
+
+export default Model;

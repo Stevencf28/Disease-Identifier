@@ -1,21 +1,22 @@
 import {
   GraphQLObjectType,
-  GraphQLString,
-  GraphQLDate
+  GraphQLString
 } from 'graphql';
+import { GraphQLDate } from 'graphql-scalars';
+import UserType from './user';
 
-export const vitalsSign = new GraphQLObjectType({
+const VitalSign = new GraphQLObjectType({
   name: 'vitals',
   fields: () => {
     return {
       _id: {
         type: GraphQLString
       },
-      nurseUserName: {
-        type: GraphQLString
+      nurse: {
+        type: UserType
       },
-      patientUserName: {
-        type: GraphQLString
+      patient: {
+        type: UserType
       },
       temperature: {
         type: GraphQLString
@@ -35,3 +36,5 @@ export const vitalsSign = new GraphQLObjectType({
     }
   }
 });
+
+export default VitalSign;

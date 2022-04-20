@@ -5,23 +5,29 @@ import {
   GraphQLList,
   GraphQLString
 } from 'graphql';
-
+import { UserInputError } from 'apollo-server-express';
+import { GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
 import jwt from 'jsonwebtoken'
 const jwtKey = secretKey;
 import { secretKey } from '../config';
 
 // GraphQLObjectTypes
-import userType from './types/user'; // User Type
+import UserType from './types/user'; // User Type
+import AlertType from './types/alert'; // Alert Type
+import VitalsType from './types/vitals'; // Vitals Type
 
 // Models
 import User from './models/User'; // User Model
+import Alert from './models/Alert'; // Alert Model
+import Vitals from './models/Vitals'; // Vitals Model
 
 const queryType = new GraphQLObjectType({
   name: 'Query',
   fields: () => {
     return {
+      // User queries
       users: {
-        type: new GraphQLList(userType),
+        type: new GraphQLList(UserType),
         resolve: () => {
           const users = User.find().exec()
           if(!users){
@@ -31,24 +37,79 @@ const queryType = new GraphQLObjectType({
         }
       },
       user: {
-        type: userType,
+        type: UserType,
         args:{
-          userName:{
+          username:{
             type: GraphQLString
           }
         },
-        resolve: (root, params) => {
-          return User.findOne({userName: params.userName}, (err, user) =>{
-            if (err) {
-              throw new Error("Error")
-            }
-            if(!user){
-              throw new Error("User not found")
-            }
-            return user
-          });
+        resolve: async (root, params) => {
+          const user = await User.findOne({username: params.username});
+          if(!user)
+            throw new UserInputError('User not found');
+
+          return user;
         }
-      }
+      },
+      patients: {
+        type: new GraphQLList(UserType),
+        resolve: () => {
+          const users = User.find({type: "Patient"}).exec()
+          return users
+        }
+      },
+      nurses: {
+        type: new GraphQLList(UserType),
+        resolve: () => {
+          const users = User.find({type: "Nurse"}).exec()
+          return users
+        }
+      },
+      // Alert Queries
+      alerts: {
+        type: new GraphQLList(AlertType),
+        resolve: () => {
+          const alerts = Alert.find().exec()
+          if(!alerts){
+            throw new Error('Cannot find alerts')
+          }
+          return alerts
+        }
+      },
+      alertByPatient: {
+        type: new GraphQLList(AlertType),
+        args:{
+          _id:{
+            type: GraphQLString
+          }
+        },
+        resolve: async (root, params) => {
+          const alerts = await Alert.find({patient: params._id}).exec();
+          return alerts;
+        }
+      },
+      vitals: {
+        type: new GraphQLList(VitalsType),
+        resolve: () => {
+          const vitals = Vitals.find().exec()
+          if(!vitals){
+            throw new Error("Cannot find Vitals")
+          }
+          return vitals
+        }
+      },
+      vitalByPatient: {
+        type: new GraphQLList(VitalsType),
+        args:{
+          _id:{
+            type: GraphQLString
+          }
+        },
+        resolve: async (root, params) => {
+          const vitals = await Vitals.find({patient: params._id}).exec();
+          return vitals;
+        }
+      },
     }
   }
 })
@@ -57,10 +118,11 @@ const mutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => {
     return {
+      // User Mutations
       register: {
-        type: userType,
+        type: UserType,
         args: {
-          userName: {
+          username: {
             type: new GraphQLNonNull(GraphQLString)
           },
           password: {
@@ -76,7 +138,7 @@ const mutationType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString)
           },
           email: {
-            type: new GraphQLNonNull(GraphQLString)
+            type: new GraphQLNonNull(GraphQLEmailAddress)
           },
           type: {
             type: new GraphQLNonNull(GraphQLString)
@@ -96,39 +158,106 @@ const mutationType = new GraphQLObjectType({
         }
       },
       signIn: {
-        type: userType,
+        type: new GraphQLObjectType({
+          name: 'loginResponse',
+          fields: () => {
+            return {
+              token: {
+                type: GraphQLString
+              }
+            }
+          }
+        }),
         args: {
-          userName: {
+          username: {
             type: new GraphQLNonNull(GraphQLString)
           },
           password: {
             type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: (root, params, context) => {
-          try {
-            return User.findOne({userName: params.userName}, (err, user) =>{
-              if (!user){
-                throw new Error("Wrong username or password.")
-              } else {
-                if (user.authenticate(params.password)){
-                  const token = jwt.sign({id: user._id, userName: user.userName, type: user.type}, jwtKey,
-                    {algorithm: 'HS256', expiresIn: 300});
-                  return user._id
-                } else {
-                  throw new Error("Wrong username or password.")
-                }
-              } 
-            })
-          } catch (e){
-            console.log(e)
+        resolve: async (root, params, context) => {
+          const user = await User.findOne({ username: params.username });
+          if (!user){
+            throw new UserInputError("Wrong username or password.");
+          }
+
+          if (user.authenticate(params.password, user.password)){
+            const token = jwt.sign(
+              {id: user._id, username: user.username, type: user.type},
+              jwtKey,
+              {algorithm: 'HS256', expiresIn: 300}
+            );
+            console.log('token', token)
+            return { token }
+          } else {
+            throw new UserInputError("Wrong username or password.");
           }
         }
       },
-      logout: {
-        type: GraphQLString,
-        resolve: (root, params, context) => {
-          return 'Logout should be done by calling the apollo logout function'
+      // Alert Mutations
+      createAlert: {
+        type: AlertType,
+        args: {
+          patientId: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          message: {
+            type: new GraphQLNonNull(GraphQLString)
+          }
+        },
+        resolve: async (root, params, context) => {
+          const newAlert = new Alert({
+            message: params.message,
+            patient: params.patientId,
+          });
+
+          const alert = Alert.create(newAlert);
+          if (!alert)
+            throw UserInputError('Error in Create Alert');
+
+          return alert;
+        }
+      },
+      // Vitals Mutations
+      createVitals: {
+        type: VitalsType,
+        args: {
+          nurseId: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          patientId: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          temperature: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          heartRate: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          bloodPressure: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          respiratoryRate: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          visitDate: {
+            type: new GraphQLNonNull(GraphQLDate)
+          }
+        },
+        resolve: async (root, params, context) => {
+          console.log('params', params);
+          const newVitals = new Vitals({
+            ...params,
+            patient: params.patientId,
+            nurse: params.nurseId
+          });
+          console.log('vitals', newVitals);
+          const vitals = await Vitals.create(newVitals);
+          if (!vitals)
+            throw UserInputError('Error in Create Vitals');
+
+          return vitals;
         }
       },
     }
