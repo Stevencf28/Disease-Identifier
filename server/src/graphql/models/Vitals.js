@@ -18,7 +18,7 @@ var VitalsSchema = new Schema({
     heartRate: String,
     bloodPressure: String,
     respiratoryRate: String,
-    visitDate: String
+    visitDate: Date
 });
 
 const Model = mongoose.model('Vitals', VitalsSchema);

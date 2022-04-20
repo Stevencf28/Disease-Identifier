@@ -6,22 +6,19 @@ import {
   GraphQLString
 } from 'graphql';
 import { UserInputError } from 'apollo-server-express';
-import { ByteResolver, GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
+import { GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
 import jwt from 'jsonwebtoken'
 const jwtKey = secretKey;
-import bcrypt from 'bcrypt';
-import { secretKey, saltRounds } from '../config';
+import { secretKey } from '../config';
 
 // GraphQLObjectTypes
 import UserType from './types/user'; // User Type
 import AlertType from './types/alert'; // Alert Type
-import PatientDailyInfoType from './types/patientDailyInfo'; // PatientDailyInfo Type
 import VitalsType from './types/vitals'; // Vitals Type
 
 // Models
 import User from './models/User'; // User Model
 import Alert from './models/Alert'; // Alert Model
-import PatientDailyInfo from './models/PatientDailyInfo'; // PatientDailyInfo Model
 import Vitals from './models/Vitals'; // Vitals Model
 
 const queryType = new GraphQLObjectType({
@@ -88,37 +85,7 @@ const queryType = new GraphQLObjectType({
           });
         }
       },
-      // PatientDailyInfo Queries
-      patientDailyInfos: {
-        type: new GraphQLList(PatientDailyInfoType),
-        resolve: () => {
-          const patientDailyInfos = PatientDailyInfo.find().exec()
-          if(!patientDailyInfos){
-            throw new Error("Cannot find Patient's Daily Information")
-          }
-          return patientDailyInfos
-        }
-      },
-      patientDailyInfo: {
-        type: PatientDailyInfoType,
-        args:{
-          _id:{
-            type: GraphQLString
-          }
-        },
-        resolve: (root, params) => {
-          return PatientDailyInfo.findOne({_id: params._id}, (err, patientDailyInfo) =>{
-            if (err) {
-              throw new Error("Error")
-            }
-            if(!patientDailyInfo){
-              throw new Error("Patient's daily info not found")
-            }
-            return patientDailyInfo
-          });
-        }
-      },
-      // Vitals Queries
+      
       vitals: {
         type: new GraphQLList(VitalsType),
         resolve: () => {
@@ -245,57 +212,16 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          console.log('called')
           const newAlert = new Alert({
             message: params.message,
             patient: params.patientId,
           });
-          console.log('alert', newAlert)
 
           const alert = Alert.create(newAlert);
           if (!alert)
             throw UserInputError('Error in Create Alert');
 
           return alert;
-        }
-      },
-      // PatientDailyInfo Mutations
-      createPatientDailyInfo: {
-        type: PatientDailyInfoType,
-        args: {
-          patientId: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          temperature: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          heartRate: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          weight: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          bloodPressure: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          respiratoryRate: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          measuredDate: {
-            type: new GraphQLNonNull(GraphQLDate)
-          }
-        },
-        resolve: async (root, params, context) => {
-          try {
-            const patientDailyInfo = new PatientDailyInfo(params);
-            const newPatientDailyInfo = patientDailyInfo.save();
-            if (!newPatientDailyInfo){
-              throw new Error('Error Creating Patient daily info');
-            }
-            return newPatientDailyInfo
-          } catch (e){
-            console.log(e)
-          }
         }
       },
       // Vitals Mutations
@@ -325,16 +251,18 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          try {
-            const vitals = new Vitals(params);
-            const newVitals = vitals.save();
-            if (!newVitals){
-              throw new Error('Error Creating Vitals');
-            }
-            return newVitals
-          } catch (e){
-            console.log(e)
-          }
+          console.log('params', params);
+          const newVitals = new Vitals({
+            ...params,
+            patient: params.patientId,
+            nurse: params.nurseId
+          });
+          console.log('vitals', newVitals);
+          const vitals = await Vitals.create(newVitals);
+          if (!vitals)
+            throw UserInputError('Error in Create Vitals');
+
+          return vitals;
         }
       },
     }
