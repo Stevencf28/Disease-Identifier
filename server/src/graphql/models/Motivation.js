@@ -6,6 +6,6 @@ var MotivationSchema = new Schema({
     tip: String
 });
 
-const Model = mongoose.mode('Motivation', MotivationSchema);
+const Model = mongoose.model('Motivation', MotivationSchema);
 
 export default Model;
