@@ -168,7 +168,7 @@ const queryType = new GraphQLObjectType({
         },
         resolve: async (root, params) => {
           try{
-            const motivation = await Motivation.fnid({_id: params._id}).exec();
+            const motivation = await Motivation.find({_id: params._id}).exec();
             if (!motivation){
               throw new Error("Motivation Tip not found.");
             }
