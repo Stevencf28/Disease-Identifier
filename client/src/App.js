@@ -6,6 +6,7 @@ import {
 import './App.css';
 import Motivation from './components/Motivation';
 import Index from './components/Index';
+import Diagnosis from './components/diagnosis';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={< Index />} />
           <Route path="/motivation" element={< Motivation />} />
+          <Route path="/diagnosis" element={< Diagnosis />} />
         </Routes>
       </div>
     </BrowserRouter>
