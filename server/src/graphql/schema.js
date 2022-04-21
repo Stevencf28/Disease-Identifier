@@ -32,15 +32,11 @@ const queryType = new GraphQLObjectType({
       users: {
         type: new GraphQLList(UserType),
         resolve: () => {
-          try{
-            const users = User.find().exec()
-            if(!users){
-              throw new Error('Cannot find users')
-            }
-            return users
-          } catch(err){
-            console.log(err)
+          const users = User.find().exec()
+          if(!users){
+            throw new Error('Cannot find users')
           }
+          return users
         }
       },
       user: {
@@ -51,52 +47,35 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          try {
-            const user = await User.findOne({username: params.username});
-            if(!user)
-              throw new UserInputError('User not found');
-  
-            return user;
-          } catch(err){
-            console.log(err)
-          }
+          const user = await User.findOne({username: params.username});
+          if(!user)
+            throw new UserInputError('User not found');
+          return user;
         }
       },
       patients: {
         type: new GraphQLList(UserType),
         resolve: () => {
-          try{
-            const users = User.find({type: "Patient"}).exec()
-            return users
-          } catch(err){
-            console.log(err)
-          }
+          const users = User.find({type: "Patient"}).exec()
+          return users
         }
       },
       nurses: {
         type: new GraphQLList(UserType),
         resolve: () => {
-          try {
-            const users = User.find({type: "Nurse"}).exec()
-            return users
-          } catch(err){
-            console.log(err)
-          }
+          const users = User.find({type: "Nurse"}).exec()
+          return users
         }
       },
       // Alert Queries
       alerts: {
         type: new GraphQLList(AlertType),
         resolve: () => {
-          try{
-            const alerts = Alert.find().exec()
-            if(!alerts){
-              throw new Error('Cannot find alerts')
-            }
-            return alerts
-          } catch(err){
-            console.log(err)
+          const alerts = Alert.find().exec()
+          if(!alerts){
+            throw new Error('Cannot find alerts')
           }
+          return alerts
         }
       },
       alertByPatient: {
@@ -107,23 +86,15 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          try{
-            const alerts = await Alert.find({patient: params._id}).exec();
-            return alerts;
-          } catch(err){
-            console.log(err)
-          }
+          const alerts = await Alert.find({patient: params._id}).exec();
+          return alerts;
         }
       },
       vitals: {
         type: new GraphQLList(VitalsType),
         resolve: () => {
-          try {
-            const vitals = Vitals.find().exec()
-            return vitals
-          } catch (err){
-            console.log(err);
-          }
+          const vitals = Vitals.find().exec()
+          return vitals
         }
       },
       vitalByPatient: {
@@ -134,29 +105,21 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          try{
-            const vitals = await Vitals.find({patient: params._id}).exec();
-            if (!vitals){
-              throw new Error("Vital information not found")
-            }
-            return vitals;
-          } catch(err){
-            console.log(err)
+          const vitals = await Vitals.find({patient: params._id}).exec();
+          if (!vitals){
+            throw new Error("Vital information not found")
           }
+          return vitals;
         }
       },
       motivations: {
         type: new GraphQLList(MotivationType),
         resolve: () => {
-          try{
-            const motivations = Motivation.find().exec()
-            if (!motivations) {
-              throw new Error("Cannot find Motivation Tips")
-            }
-            return motivations
-          } catch(err){
-            console.log(err)
+          const motivations = Motivation.find().exec()
+          if (!motivations) {
+            throw new Error("Cannot find Motivation Tips")
           }
+          return motivations
         }
       },
       motivation: {
@@ -167,31 +130,23 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          try{
-            const motivation = await Motivation.find({_id: params._id}).exec();
-            if (!motivation){
-              throw new Error("Motivation Tip not found.");
-            }
-            return motivation;
-          } catch(err){
-            console.log(err)
+          const motivation = await Motivation.find({_id: params._id}).exec();
+          if (!motivation){
+            throw new Error("Motivation Tip not found.");
           }
+          return motivation;
         }
       },
       randomMotivation: {
         type: MotivationType,
         resolve: async (root, params) => {
-          try{
-            Motivation.findOneRandom((fetchError, motivation) => {
-              if(!fetchError){
-                return motivation;
-              } else {
-                console.log(fetchError);
-              }
-            })
-          } catch(err){
-            console.log(err)
-          }
+          Motivation.findOneRandom((fetchError, motivation) => {
+            if(!fetchError){
+              return motivation;
+            } else {
+              console.log(fetchError);
+            }
+          })
         }
       }
     }
@@ -229,16 +184,12 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          try {
-            const user = new User(params);
-            const newUser = user.save();
-            if (!newUser){
-              throw new Error('Error Creating User');
-            }
-            return newUser
-          } catch (e) {
-            console.log(e)
+          const user = new User(params);
+          const newUser = user.save();
+          if (!newUser){
+            throw new Error('Error Creating User');
           }
+          return newUser;
         }
       },
       signIn: {
@@ -261,25 +212,21 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          try{
-            const user = await User.findOne({ username: params.username });
-            if (!user){
-              throw new UserInputError("Wrong username or password.");
-            }
-  
-            if (user.authenticate(params.password, user.password)){
-              const token = jwt.sign(
-                {id: user._id, username: user.username, type: user.type},
-                jwtKey,
-                {algorithm: 'HS256', expiresIn: 300}
-              );
-              console.log('token', token)
-              return { token }
-            } else {
-              throw new UserInputError("Wrong username or password.");
-            }
-          } catch(err){
-            console.log(err)
+          const user = await User.findOne({ username: params.username });
+          if (!user){
+            throw new UserInputError("Wrong username or password.");
+          }
+
+          if (user.authenticate(params.password, user.password)){
+            const token = jwt.sign(
+              {id: user._id, username: user.username, type: user.type},
+              jwtKey,
+              {algorithm: 'HS256', expiresIn: 300}
+            );
+            console.log('token', token)
+            return { token }
+          } else {
+            throw new UserInputError("Wrong username or password.");
           }
         }
       },
@@ -295,20 +242,16 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          try{
-            const newAlert = new Alert({
-              message: params.message,
-              patient: params.patientId,
-            });
-  
-            const alert = Alert.create(newAlert);
-            if (!alert)
-              throw UserInputError('Error in Create Alert');
-  
-            return alert;
-          } catch(err){
-            console.log(err)
-          }
+          const newAlert = new Alert({
+            message: params.message,
+            patient: params.patientId,
+          });
+
+          const alert = Alert.create(newAlert);
+          if (!alert)
+            throw UserInputError('Error in Create Alert');
+
+          return alert;
         }
       },
       // Vitals Mutations
@@ -338,20 +281,16 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          try{
-            const newVitals = new Vitals({
-              ...params,
-              patient: params.patientId,
-              nurse: params.nurseId
-            });
-            const vitals = await Vitals.create(newVitals);
-            if (!vitals)
-              throw UserInputError('Error in Create Vitals');
-  
-            return vitals;
-          } catch(err){
-            console.log(err)
-          }
+          const newVitals = new Vitals({
+            ...params,
+            patient: params.patientId,
+            nurse: params.nurseId
+          });
+          const vitals = await Vitals.create(newVitals);
+          if (!vitals)
+            throw UserInputError('Error in Create Vitals');
+
+          return vitals;
         }
       },
       createMotivation: {
@@ -362,16 +301,12 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          try{
-            const newMotivation = new Motivation({params});
-            const motivation = await Motivation.create(newMotivation);
-            if (!motivation){
-              throw UserInputError('Error in creating motivation tip');
-            }
-            return motivation;
-          } catch(err){
-            console.log(err)
+          const newMotivation = new Motivation({params});
+          const motivation = await Motivation.create(newMotivation);
+          if (!motivation){
+            throw UserInputError('Error in creating motivation tip');
           }
+          return motivation;
         }
       },
       deleteMotivation: {
@@ -382,15 +317,11 @@ const mutationType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params, context) => {
-          try{
-            const deleteMotivation = await Motivation.findByIdAndDelete(params._id).exec();
-            if(!deleteMotivation){
-              throw new Error('Error deleting Motivation');
-            }
-            return deleteMotivation;
-          } catch(err){
-            console.log(err)
+          const deleteMotivation = await Motivation.findByIdAndDelete(params._id).exec();
+          if(!deleteMotivation){
+            throw new Error('Error deleting Motivation');
           }
+          return deleteMotivation;
         }
       },
     }
