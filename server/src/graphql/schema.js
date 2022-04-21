@@ -373,7 +373,26 @@ const mutationType = new GraphQLObjectType({
             console.log(err)
           }
         }
-      }
+      },
+      deleteMotivation: {
+        type: MotivationType,
+        args: {
+          _id:{
+            type: new GraphQLNonNull(GraphQLString)
+          }
+        },
+        resolve: async (root, params, context) => {
+          try{
+            const deleteMotivation = await Motivation.findByIdAndDelete(params._id).exec();
+            if(!deleteMotivation){
+              throw new Error('Error deleting Motivation');
+            }
+            return deleteMotivation;
+          } catch(err){
+            console.log(err)
+          }
+        }
+      },
     }
   }
 })
