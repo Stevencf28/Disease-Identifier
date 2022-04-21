@@ -7,6 +7,7 @@ import {
 } from 'graphql';
 import { UserInputError } from 'apollo-server-express';
 import { GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
+import random from 'mongoose-simple-random';
 import jwt from 'jsonwebtoken'
 const jwtKey = secretKey;
 import { secretKey } from '../config';
@@ -172,6 +173,22 @@ const queryType = new GraphQLObjectType({
               throw new Error("Motivation Tip not found.");
             }
             return motivation;
+          } catch(err){
+            console.log(err)
+          }
+        }
+      },
+      randomMotivation: {
+        type: MotivationType,
+        resolve: async (root, params) => {
+          try{
+            Motivation.findOneRandom((fetchError, motivation) => {
+              if(!fetchError){
+                return motivation;
+              } else {
+                console.log(fetchError);
+              }
+            })
           } catch(err){
             console.log(err)
           }
