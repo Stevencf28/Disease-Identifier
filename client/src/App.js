@@ -6,10 +6,11 @@ import {
 import './App.css';
 import Motivation from './components/Motivation';
 import PatientList from './components/PatientList';
-import NursePatientActions from './components/NursePatientActions';
+import MyActions from './components/MyActions';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import Diagnosis from './components/diagnosis';
+import Diagnosis from './components/Diagnosis'
+import NursePatientActions from './components/NursePatientActions';
 import Login from './components/Login';
 import Registration from './components/Registration';
 import Home from './components/Home';
@@ -50,8 +51,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/motivation" element={< Motivation />} />
+          <Route path="/diagnosis" element={< Diagnosis />} />
           <Route path="/patients" element={<PatientList />}></Route>
           <Route path="/patientActions" element={<NursePatientActions showSnackBar={showSnackBar} />}></Route>
+          <Route path="/myActions" element={<MyActions showSnackBar={showSnackBar} />}></Route>
           <Route path="/diagnosis" element={< Diagnosis />} />
         </Routes>
 
