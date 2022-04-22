@@ -19,6 +19,7 @@ import UserType from './types/user'; // User Type
 import AlertType from './types/alert'; // Alert Type
 import VitalsType from './types/vitals'; // Vitals Type
 import MotivationType from './types/motivation' // Motivations Type
+import LoginType from './types/login'; // Login Type
 
 // Models
 import User from './models/User'; // User Model
@@ -195,16 +196,7 @@ const mutationType = new GraphQLObjectType({
         }
       },
       signIn: {
-        type: new GraphQLObjectType({
-          name: 'loginResponse',
-          fields: () => {
-            return {
-              token: {
-                type: GraphQLString
-              }
-            }
-          }
-        }),
+        type: LoginType,
         args: {
           username: {
             type: new GraphQLNonNull(GraphQLString)
@@ -225,8 +217,7 @@ const mutationType = new GraphQLObjectType({
               jwtKey,
               {algorithm: 'HS256', expiresIn: 300}
             );
-            console.log('token', token)
-            return { token }
+            return { _id: user._id, type: user.type, token: token }
           } else {
             throw new UserInputError("Wrong username or password.");
           }

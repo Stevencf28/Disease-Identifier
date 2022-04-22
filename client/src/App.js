@@ -5,7 +5,6 @@ import {
   Route } from 'react-router-dom'
 import './App.css';
 import Motivation from './components/Motivation';
-import Index from './components/Index';
 import PatientList from './components/PatientList';
 import NursePatientActions from './components/NursePatientActions';
 import Snackbar from '@mui/material/Snackbar';
@@ -13,6 +12,7 @@ import MuiAlert from '@mui/material/Alert';
 import Diagnosis from './components/diagnosis';
 import Login from './components/Login';
 import Registration from './components/Registration';
+import Home from './components/Home';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -45,7 +45,7 @@ function App() {
     <BrowserRouter>
       <div>
         <Routes>
-          <Route path="/" element={< Index />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/motivation" element={< Motivation />} />
