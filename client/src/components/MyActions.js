@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -8,6 +8,8 @@ import Tabs from "@mui/material/Tabs";
 import Diagnosis from "./Diagnosis";
 import Motivation from "./Motivation";
 import Alert from "./Alert";
+import VitalsForm from './VitalsForm';
+import { UserContext } from '../shared/UserContext';
 
 const GET_PATIENT = gql`
   query GetPatient($patientId: String) {
@@ -21,6 +23,15 @@ const GET_PATIENT = gql`
 const ADD_ALERT = gql `
 mutation CreateAlert($patientId: String!, $message: String!) {
   createAlert(patientId: $patientId, message: $message) {
+    _id
+  }
+}`;
+
+const ADD_VITALS = gql `
+mutation CreateVitals($nurseId: String!, $patientId: String!, $temperature: String!, 
+          $heartRate: String!, $bloodPressure: String!, $respiratoryRate: String!, $visitDate: Date!) {
+  createVitals(nurseId: $nurseId, patientId: $patientId, temperature: $temperature, heartRate: $heartRate, 
+          bloodPressure: $bloodPressure, respiratoryRate: $respiratoryRate, visitDate: $visitDate) {
     _id
   }
 }`;
@@ -51,7 +62,8 @@ function a11yProps(index) {
 export default function MyActions({ showSnackBar }) {
   const [patient, setPatient] = useState(null);
   const { state } = useLocation();
-  const patientId = "62603c330bbc2a5bee4ec5a0"; // todo: get from login
+  const { user } = useContext(UserContext);
+  const patientId = user.userId;
   const [tabValue, setTabValue] = useState(0);
 
     // get the patient name
@@ -82,6 +94,25 @@ export default function MyActions({ showSnackBar }) {
         console.log(error);
     }
   });
+
+  // add vitals
+  const [addVitals, { AddVitalsData, AddVitalsLoading, AddVitalsError }] = useMutation(ADD_VITALS,
+		{
+		onCompleted: data => {
+			console.log(data);
+			showSnackBar({message: 'Add Vitals Successful', severity: 'success'});
+		},
+		onError: error => {
+			showSnackBar({message: 'Add Vitals Failed', severity: 'error'});
+			console.log(error);
+		}
+	});
+
+  const processAddVitals = (addVitalsRequest) => {
+    // call the mutation
+    console.log('addvitalrequest -> ', addVitalsRequest);
+		addVitals({ variables: addVitalsRequest });
+  }
 
   const processAddAlert = (addAlertRequest) => {
     // call the mutation
@@ -125,7 +156,7 @@ export default function MyActions({ showSnackBar }) {
               <Alert processAddAlert={processAddAlert}/>
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
-              Enter Vitals
+              <VitalsForm patientId={patientId} processAddVitals={processAddVitals} isFromPatientView={true} />
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
               <Diagnosis />
