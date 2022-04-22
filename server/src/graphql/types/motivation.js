@@ -7,10 +7,16 @@ const Motivation = new GraphQLObjectType({
     name: 'motivation',
     fields: () => {
         return {
-            _id:{
+            _id: {
                 type: GraphQLString
             },
-            tip:{
+            content: {
+                type: GraphQLString
+            },
+            type: {
+                type: GraphQLString
+            },
+            patientId: {
                 type: GraphQLString
             }
         }

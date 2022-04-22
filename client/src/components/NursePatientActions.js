@@ -11,6 +11,8 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import PatientVitals from './PatientVitals';
 import VitalsForm from './VitalsForm';
+import SendMotivation from './SendMotivation';
+import PatientAlerts from './PatientAlerts';
 
 const GET_PATIENT = gql`
 query GetPatient($patientId: String) {
@@ -25,6 +27,13 @@ mutation CreateVitals($nurseId: String!, $patientId: String!, $temperature: Stri
           $heartRate: String!, $bloodPressure: String!, $respiratoryRate: String!, $visitDate: Date!) {
   createVitals(nurseId: $nurseId, patientId: $patientId, temperature: $temperature, heartRate: $heartRate, 
           bloodPressure: $bloodPressure, respiratoryRate: $respiratoryRate, visitDate: $visitDate) {
+    _id
+  }
+}`;
+
+const ADD_MOTIVATION = gql`
+mutation Mutation($content: String!, $type: String!, $patientId: String!) {
+  createMotivation(content: $content, type: $type, patientId: $patientId) {
     _id
   }
 }`;
@@ -57,7 +66,7 @@ function a11yProps(index) {
 }
 
 // todo: need to get nurse id on login
-export default function PatientActions({showSnackBar}) {
+export default function NursePatientActions({showSnackBar}) {
   const [patient, setPatient] = useState(null);
   const { state } = useLocation();
   const patientId = state.patientId;
@@ -93,10 +102,29 @@ export default function PatientActions({showSnackBar}) {
 		}
 	});
 
+  // add patient motivation
+  const [addMotivation, { AddMotivationData, AddMotivationLoading, AddMotivationError }] = useMutation(ADD_MOTIVATION,
+    {
+    onCompleted: data => {
+      console.log(data);
+      showSnackBar({message: 'Add Motivations Successful', severity: 'success'});
+    },
+    onError: error => {
+      showSnackBar({message: 'Add Motivations Failed', severity: 'error'});
+      console.log(error);
+    }
+  });
+
   const processAddVitals = (addVitalsRequest) => {
     // call the mutation
     console.log('addvitalrequest -> ', addVitalsRequest);
 		addVitals({ variables: addVitalsRequest });
+  }
+
+  const processAddMotivation = (addMotivationRequest) => {
+    // call the mutation
+    console.log('add motivation request -> , ', addMotivationRequest);
+    addMotivation({variables: addMotivationRequest})
   }
 
   const handleTabChange = (event, newValue) => {
@@ -109,7 +137,7 @@ export default function PatientActions({showSnackBar}) {
         (
           <div>
             <Typography variant="h5" color="textPrimary">
-              {patient.firstName} {patient.lastName} Actions
+              {patient.firstName} {patient.lastName} Records
             </Typography>
 
 
@@ -130,6 +158,7 @@ export default function PatientActions({showSnackBar}) {
                   <Tab label="Vital Informaton" {...a11yProps(0)} />
                   <Tab label="Enter Vitals" {...a11yProps(1)} />
                   <Tab label="Send Motivation" {...a11yProps(2)} />
+                  <Tab label="Patient Alerts" {...a11yProps(3)} />
                 </Tabs>
               </Box>
               <TabPanel value={tabValue} index={0}>
@@ -139,7 +168,10 @@ export default function PatientActions({showSnackBar}) {
                 <VitalsForm patientId={patientId} nurseId={nurseId} processAddVitals={processAddVitals} />
               </TabPanel>
               <TabPanel value={tabValue} index={2}>
-                Item Three
+                <SendMotivation processAddMotivation={processAddMotivation} patientId={patientId} />
+              </TabPanel>
+              <TabPanel value={tabValue} index={3}>
+                <PatientAlerts patientId={patientId} />
               </TabPanel>
             </Box>
           </div>
