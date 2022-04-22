@@ -6,8 +6,9 @@ import {
 	FormControl,
 	Button,
 	FormHelperText,
-	FormLabel,
-	FormControlLabel,
+	InputLabel,
+	Select,
+	MenuItem,
   Typography
 } from "@mui/material";
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -15,15 +16,39 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import moment from "moment";
+import { gql, useQuery } from "@apollo/client";
 
-export default function VitalsForm({ patientId, nurseId, processAddVitals }) {
+const GET_NURSES = gql`query GetNurses {
+  nurses {
+    _id
+    firstName
+    lastName
+  }
+}`;
+
+export default function VitalsForm({ patientId, nurseId, processAddVitals, isFromPatientView }) {
   const [temperature, setTemperature] = useState('0');
   const [heartRate, setHeartRate] = useState('0');
   const [bloodPressure, setBloodPressure] = useState('0');
   const [respiratoryRate, setRespiratoryRate] = useState('0');
   const [visitDate, setVisitDate] = useState(null);
+	const [nurses, setNurses] = useState([]);
+	const [selectedNurse, setSelectedNurse] = useState('');
 
   const [visitDateError, setVisitDateError] = useState({error: false, errorMsg: ""});
+	const [selectedNurseError, setSelectedNurseError] = useState({error: false, errorMsg: ""});
+
+	  // query nurses only if its a patient 
+		const { loading, error, data, refetch } = useQuery(GET_NURSES, 
+			{
+				skip: !isFromPatientView,
+				onCompleted: data => {  
+				if (data && data.nurses) {
+					console.log('nurses -> ', data);
+					setNurses(data.nurses);
+				}
+			}}
+		);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,10 +61,19 @@ export default function VitalsForm({ patientId, nurseId, processAddVitals }) {
 			isValid = false;
 		}
 
+		if (isFromPatientView) {
+			if (!selectedNurse) {
+				setSelectedNurseError({error: true, errorMsg: "Select a nurse"});
+				isValid = false;
+			}
+		}
+
     if (isValid) {
+			const nurseIdValue = isFromPatientView ? selectedNurse._id : nurseId;
+
 			const addVitalsRequest = {
         patientId,
-        nurseId,
+        nurseId: nurseIdValue,
 				temperature,
 				heartRate,
 				bloodPressure,
@@ -48,11 +82,26 @@ export default function VitalsForm({ patientId, nurseId, processAddVitals }) {
 			};
 
       processAddVitals(addVitalsRequest);
+
+			if (isFromPatientView) {
+				// reset form
+				resetForm();
+			}
     }
   }
 
   const resetErrors = () => {
 		setVisitDateError({error: false, errorMsg: ""});
+		setSelectedNurseError({error: false, errorMsg: ""});
+	}
+
+	const resetForm = () => {
+		setTemperature('0');
+		setHeartRate('0');
+		setBloodPressure('0');
+		setRespiratoryRate('0');
+		setVisitDate(null);
+		setSelectedNurse('');
 	}
 
   return (
@@ -120,6 +169,29 @@ export default function VitalsForm({ patientId, nurseId, processAddVitals }) {
 						</LocalizationProvider>
 						{visitDateError.error && <FormHelperText>{visitDateError.errorMsg}</FormHelperText>}
 					</FormControl>
+
+					{ (nurses.length > 0 && isFromPatientView) && 
+						<FormControl sx={{ m: 1 }} error={selectedNurseError.error} fullWidth>
+							<InputLabel id="visited-nurse">Nurse</InputLabel>
+							<Select
+							labelId="visited-nurse"
+							id="visited nurse"
+							label="Nurse"
+							value={selectedNurse}
+							onChange={(e) => setSelectedNurse(e.target.value)}
+							>
+								{nurses.map((nurse) => (
+                  <MenuItem
+                    key={nurse._id}
+                    value={nurse}
+                  >
+                    {`${nurse.firstName} ${nurse.lastName}`}
+                  </MenuItem>
+                ))}
+							</Select>
+							{selectedNurseError.error && <FormHelperText>{selectedNurseError.errorMsg}</FormHelperText>}
+						</FormControl>
+					}
 
           <br />
 					<br />
