@@ -48,11 +48,11 @@ export default function PatientVitals({patientId}) {
   /* Pagination Handlers end */
 
 	const columns = [
+		{ id: 'visitDate', label: 'Visit Date', minWidth: 170 },
 		{ id: 'temperature', label: 'Temperature', minWidth: 100 },
 		{ id: 'heartRate', label: 'Heart Rate', minWidth: 100 },
 		{ id: 'bloodPressure', label: 'Blood Pressure', minWidth: 100 },
 		{ id: 'respiratoryRate', label: 'Respiratory Date', minWidth: 100 },
-		{ id: 'visitDate', label: 'Visit Date', minWidth: 170 },
 	];
 
   // query vitals list
@@ -126,16 +126,12 @@ export default function PatientVitals({patientId}) {
 				/>
 				</Grid>
         </Container>
-
-        
         :
         <Typography variant="h6" color="textPrimary">
           Patient Vitals Not found
-      </Typography>
+      	</Typography>
       }
     </div>
-
-
   )
 }
 

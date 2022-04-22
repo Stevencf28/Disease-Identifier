@@ -11,6 +11,8 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import PatientVitals from './PatientVitals';
 import VitalsForm from './VitalsForm';
+import SendMotivation from './SendMotivation';
+import PatientAlerts from './PatientAlerts';
 
 const GET_PATIENT = gql`
 query GetPatient($patientId: String) {
@@ -57,7 +59,7 @@ function a11yProps(index) {
 }
 
 // todo: need to get nurse id on login
-export default function PatientActions({showSnackBar}) {
+export default function NursePatientActions({showSnackBar}) {
   const [patient, setPatient] = useState(null);
   const { state } = useLocation();
   const patientId = state.patientId;
@@ -109,7 +111,7 @@ export default function PatientActions({showSnackBar}) {
         (
           <div>
             <Typography variant="h5" color="textPrimary">
-              {patient.firstName} {patient.lastName} Actions
+              {patient.firstName} {patient.lastName} Records
             </Typography>
 
 
@@ -130,6 +132,7 @@ export default function PatientActions({showSnackBar}) {
                   <Tab label="Vital Informaton" {...a11yProps(0)} />
                   <Tab label="Enter Vitals" {...a11yProps(1)} />
                   <Tab label="Send Motivation" {...a11yProps(2)} />
+                  <Tab label="Patient Alerts" {...a11yProps(3)} />
                 </Tabs>
               </Box>
               <TabPanel value={tabValue} index={0}>
@@ -139,7 +142,10 @@ export default function PatientActions({showSnackBar}) {
                 <VitalsForm patientId={patientId} nurseId={nurseId} processAddVitals={processAddVitals} />
               </TabPanel>
               <TabPanel value={tabValue} index={2}>
-                Item Three
+                <SendMotivation />
+              </TabPanel>
+              <TabPanel value={tabValue} index={3}>
+                <PatientAlerts patientId={patientId} />
               </TabPanel>
             </Box>
           </div>

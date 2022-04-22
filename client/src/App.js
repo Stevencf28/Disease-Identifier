@@ -7,7 +7,7 @@ import './App.css';
 import Motivation from './components/Motivation';
 import Index from './components/Index';
 import PatientList from './components/PatientList';
-import PatientActions from './components/PatientActions';
+import NursePatientActions from './components/NursePatientActions';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
@@ -43,7 +43,7 @@ function App() {
           <Route path="/" element={< Index />} />
           <Route path="/motivation" element={< Motivation />} />
           <Route path="/patients" element={<PatientList />}></Route>
-          <Route path="/patientActions" element={<PatientActions showSnackBar={showSnackBar} />}></Route>
+          <Route path="/patientActions" element={<NursePatientActions showSnackBar={showSnackBar} />}></Route>
         </Routes>
 
         <Snackbar
