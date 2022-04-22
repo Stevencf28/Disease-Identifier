@@ -19,12 +19,14 @@ import UserType from './types/user'; // User Type
 import AlertType from './types/alert'; // Alert Type
 import VitalsType from './types/vitals'; // Vitals Type
 import MotivationType from './types/motivation' // Motivations Type
+import LoginType from './types/login'; // Login Type
 
 // Models
 import User from './models/User'; // User Model
 import Alert from './models/Alert'; // Alert Model
 import Vitals from './models/Vitals'; // Vitals Model
 import Motivation from './models/Motivation'; // Motivation Model
+import { shuffle } from '../utils';
 
 const queryType = new GraphQLObjectType({
   name: 'Query',
@@ -103,7 +105,7 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          const alerts = await Alert.find({patient: params._id}).exec();
+          const alerts = await Alert.find({patient: params._id}).populate('patient').exec();
           return alerts;
         }
       },
@@ -122,7 +124,7 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          const vitals = await Vitals.find({patient: params._id}).exec();
+          const vitals = await Vitals.find({patient: params._id}).sort({visitDate: -1}).exec();
           if (!vitals){
             throw new Error("Vital information not found")
           }
@@ -148,6 +150,7 @@ const queryType = new GraphQLObjectType({
         },
         resolve: async (root, params) => {
           const motivations = await Motivation.find({patientId: params.patientId}).exec();
+          shuffle(motivations);
           return motivations;
         }
       }
@@ -179,7 +182,7 @@ const mutationType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString)
           },
           email: {
-            type: new GraphQLNonNull(GraphQLEmailAddress)
+            type: new GraphQLNonNull(GraphQLString)
           },
           type: {
             type: new GraphQLNonNull(GraphQLString)
@@ -195,16 +198,7 @@ const mutationType = new GraphQLObjectType({
         }
       },
       signIn: {
-        type: new GraphQLObjectType({
-          name: 'loginResponse',
-          fields: () => {
-            return {
-              token: {
-                type: GraphQLString
-              }
-            }
-          }
-        }),
+        type: LoginType,
         args: {
           username: {
             type: new GraphQLNonNull(GraphQLString)
@@ -225,8 +219,7 @@ const mutationType = new GraphQLObjectType({
               jwtKey,
               {algorithm: 'HS256', expiresIn: 300}
             );
-            console.log('token', token)
-            return { token }
+            return { _id: user._id, type: user.type, token: token }
           } else {
             throw new UserInputError("Wrong username or password.");
           }

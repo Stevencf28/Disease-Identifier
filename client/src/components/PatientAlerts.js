@@ -16,8 +16,12 @@ import {
 const GET_PATIENT_ALERTS = gql`
 query GetPatientAlerts($patientId: String) {
   alertByPatient(_id: $patientId) {
-    message
     _id
+    message
+    patient {
+      firstName
+      lastName
+    }
   }
 }`;
 
@@ -81,16 +85,9 @@ export default function PatientAlerts({patientId}) {
 								.map((alert) => {
 									return (
 										<TableRow hover role="checkbox" tabIndex={-1} key={alert._id}>
-											{
-												columns.map((column) => {
-													let cellValue = alert[column.id];
-                          return (
-                            <TableCell key={column.id}>
-                              {cellValue}
-                            </TableCell>
-                          )
-												})
-											}
+                      <TableCell key={alert._id}>
+                        {alert.patient.firstName} {alert.patient.lastName} sent an ALERT at {alert.message}
+                      </TableCell>
 										</TableRow>
 									)
 								})

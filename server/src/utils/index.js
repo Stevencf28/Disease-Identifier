@@ -1,5 +1,3 @@
-import createError from 'http-errors';
-
 export const normalizePort = (portEnv) => {
   const port = parseInt(portEnv, 10);
   
@@ -14,4 +12,11 @@ export const normalizePort = (portEnv) => {
   }
 
   return false;
+}
+
+export const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
 }

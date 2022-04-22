@@ -4,6 +4,16 @@ import { Box } from '@mui/system';
 import { Card } from '@mui/material';
 
 const Item = ({motivation}) => {
+    let content = motivation.content;
+    if (motivation.type === 'youtube'){
+        if(content.includes('https://youtu.be/')){
+            content = content.replace('https://youtu.be/', 'https://www.youtube.com/embed/')
+        }
+        if(content.includes('https://www.youtube.com/watch?v=')){
+            content = content.replace('https://www.youtube.com/watch?v=', 'https://www.youtube.com/embed/')
+        }
+    }
+
     return (
         // This is the motivation video frame
         <div>
@@ -24,11 +34,11 @@ const Item = ({motivation}) => {
                     <iframe 
                         width="355" 
                         height="200" 
-                        src="https://www.youtube.com/embed/videoseries?list=PLUKRqQ8cSB-DCDuEl5vYogIMH9ph-7OP7&autoplay=0" 
+                        src={content}
                         title="Motivational Video"
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen 
+                        allowFullScreen 
                     />
                 }
             </Box>
