@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, forwardRef } from 'react';
 import { 
   BrowserRouter,
   Routes,
@@ -6,9 +6,37 @@ import {
 import './App.css';
 import Motivation from './components/Motivation';
 import Index from './components/Index';
+import PatientList from './components/PatientList';
+import NursePatientActions from './components/NursePatientActions';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import Diagnosis from './components/diagnosis';
 
+const Alert = forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+
 function App() {
+  const [sbSeverity, setSbSeverity] = useState('success');
+  const [sbMsg, setSbMsg] = useState('');
+  const [openSb, setOpenSb] = useState(false);
+  const showSnackBar = (options) => {
+    if (options) {
+      setSbSeverity(options.severity);
+      setSbMsg(options.message);
+      setOpenSb(true);
+    }
+  }
+
+  const handleSbClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSb(false);
+  };
+
   return (
     <>
     <BrowserRouter>
@@ -16,8 +44,20 @@ function App() {
         <Routes>
           <Route path="/" element={< Index />} />
           <Route path="/motivation" element={< Motivation />} />
+          <Route path="/patients" element={<PatientList />}></Route>
+          <Route path="/patientActions" element={<NursePatientActions showSnackBar={showSnackBar} />}></Route>
           <Route path="/diagnosis" element={< Diagnosis />} />
         </Routes>
+
+        <Snackbar
+          anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+          open={openSb}
+          onClose={handleSbClose}
+          autoHideDuration={5000}                
+        >
+          <Alert severity={sbSeverity} onClose={handleSbClose}>{sbMsg}</Alert>
+        </Snackbar>
+
       </div>
     </BrowserRouter>
     </>

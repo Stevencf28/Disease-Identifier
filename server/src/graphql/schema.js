@@ -55,6 +55,21 @@ const queryType = new GraphQLObjectType({
           return user;
         }
       },
+      patient: {
+        type: UserType,
+        args:{
+          id:{
+            type: GraphQLString
+          }
+        },
+        resolve: async (root, params) => {
+          const user = await User.findOne({_id: params.id});
+          if(!user)
+            throw new UserInputError('User not found');
+
+          return user;
+        }
+      },
       patients: {
         type: new GraphQLList(UserType),
         resolve: () => {
