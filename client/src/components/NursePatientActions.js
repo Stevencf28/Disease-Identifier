@@ -66,7 +66,6 @@ function a11yProps(index) {
   };
 }
 
-// todo: need to get nurse id on login
 export default function NursePatientActions({showSnackBar}) {
   const [patient, setPatient] = useState(undefined);
   const { state } = useLocation();

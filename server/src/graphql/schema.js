@@ -26,6 +26,7 @@ import User from './models/User'; // User Model
 import Alert from './models/Alert'; // Alert Model
 import Vitals from './models/Vitals'; // Vitals Model
 import Motivation from './models/Motivation'; // Motivation Model
+import { shuffle } from '../utils';
 
 const queryType = new GraphQLObjectType({
   name: 'Query',
@@ -104,7 +105,7 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          const alerts = await Alert.find({patient: params._id}).exec();
+          const alerts = await Alert.find({patient: params._id}).populate('patient').exec();
           return alerts;
         }
       },
@@ -123,7 +124,7 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          const vitals = await Vitals.find({patient: params._id}).exec();
+          const vitals = await Vitals.find({patient: params._id}).sort({visitDate: -1}).exec();
           if (!vitals){
             throw new Error("Vital information not found")
           }
@@ -149,6 +150,7 @@ const queryType = new GraphQLObjectType({
         },
         resolve: async (root, params) => {
           const motivations = await Motivation.find({patientId: params.patientId}).exec();
+          shuffle(motivations);
           return motivations;
         }
       }
