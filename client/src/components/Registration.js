@@ -1,130 +1,195 @@
-import React, { Component } from 'react';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
+import { 
+    Box, 
+    Button,
+    Container,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    Typography 
+} from '@mui/material';
 import { gql, useMutation} from '@apollo/client';
+import { UserContext } from '../shared/UserContext';
 
-const ADD_USER = gql`
-    mutation Register(
-        $userName: String!,
+const REGISTER = gql`
+    mutation Mutation(
+        $username: String!, 
         $password: String!,
         $firstName: String!,
         $lastName: String!,
-        $phone: String!, 
+        $phone: String!,
         $email: String!,
-        $type: String!,
-    ) {
-    register(
-    username: $userName,
-    password: $password,
-    firstName: $firstName,
-    lastName: $lastName,
-    phone: $phone,
-    email: $email,
-    type: $type,
-        ){
-    _id
-    username
-    firstName
-    lastName
-    phone
-    email
-    type
+        $type: String!) {
+        register(
+            username: $username,
+            password: $password,
+            firstName: $firstName,
+            lastName: $lastName,
+            phone: $phone,
+            email: $email
+            type: $type) {
+                _id
+                username
+                firstName
+                lastName
+                phone
+                email
+                type
+        }
     }
-}
 `;
 
 const Register = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirm, setConfirm] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
+    const [type, setType] = useState('');
+    const { login } = useContext(UserContext);
+    const navigate = useNavigate();
 
-    let userName, password, firstName, lastName, phone, email, type;
-    const [register,{ data, loading, error }] = useMutation(ADD_USER); 
-   
-    if(error) return 'Submission error! ${error.message}';
-   if (loading) return 'Submitting...';
-   if(!loading && data) return    `Registration Successful` +data?.register?._id;
-   console.log(data);
-return (
-    <div>
-        <form
-            onSubmit={e => {    
-                e.preventDefault();
-                register({ variables: { userName: userName.value, password: password.value, firstName: firstName.value, 
-                    lastName: lastName.value, phone: phone.value, email: email.value, type:type.value, 
-                
-                  } });
-            
-                  userName.value='';
-                  password.value = '';
-                  firstName.value='';
-                  lastName.value='';
-                  phone.value='';
-                email.value='';
-                type.value='';
-                
-            }}
-        >
-            <div class="outer_container">
-            <div class="container">
-                <label>
-                    <b>User Name:</b>
-                </label>
-                <input type="text" class="fields" name="userName" ref={node => { userName= node; }} 
-                placeholder="userName" />
-            </div>
-
-            <div class="container">
-                <label>
-                    <b>Password:</b>
-                </label>
-                <input type="password" class="fields" name="password" ref={node => {password = node; }} 
-                placeholder="Password" />
-            </div>
-
-            <div class="container">
-                <label>
-                    <b>First Name:</b>
-                </label>
-                <input type="text" class="fields" name="firstName" ref={node => {firstName = node; }} 
-                placeholder="First Name" />
-            </div>
-
-            <div class="container">
-                <label>
-                    <b>Last Name:</b>
-                </label>
-                <input type="text" class="fields" name="lastName" ref={node => {lastName = node; }}
-                placeholder="Last Name" />
-            </div>
-
-
-            <div class="container">
-                <label>
-                    <b>Phone:</b>
-                </label>
-                <input type="text" class="fields" name="phone" ref={node => {phone = node; }}
-                placeholder="Phone:" />
-            </div>
-
-            <div class="container">
-                <label>
-                    <b>Email:</b>
-                </label>
-                <input type="text" class="fields" name="email" ref={node => {email = node; }}
-                placeholder="Email:" />
-            </div>
-            <div class="container">
-                <label>
-                    <b>Type:</b>
-                </label>
-                <input type="text" class="fields" name="type" ref={node => {type = node; }}
-                placeholder="Type:" />
-            </div>
-            <div class="container">
-                <button type="submit" class="fields"> Register</button>
-
-            </div>
-            </div>
-        </form>
-    </div>
-    );
-
+    const [signIn, { data, error } ] = useMutation(REGISTER, {
+        onCompleted: (data) => {
+            console.log('data complete', data);
+            const details = data.register;
+            navigate('/');
+        },
+        onError: (error) => {
+            console.log('error', error);
         }
-        
-    export default Register
+    });
+
+    const handleRegister = (e) => {
+        e.preventDefault();
+        console.log('creds', username, password)
+        signIn({ variables: { 
+            username, 
+            password,
+            firstName,
+            lastName,
+            phone,
+            email,
+            type
+        }});
+    }
+
+    return (
+        <Container maxWidth="xs">
+            <Typography variant="h5" color="textPrimary">
+                Register
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+            <form autoComplete="off" noValidate onSubmit={handleRegister}>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                    <TextField
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        label="Username"
+                        variant="outlined"
+                        color="primary"
+                        type="text"
+                        required
+                    />
+                </FormControl>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                    <TextField
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        label="Password"
+                        variant="outlined"
+                        color="primary"
+                        type="password"
+                        required
+                    />
+                </FormControl>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                    <TextField
+                        value={confirm}
+                        onChange={(e) => setConfirm(e.target.value)}
+                        label="Confirm Password"
+                        variant="outlined"
+                        color="primary"
+                        type="password"
+                        required
+                    />
+                </FormControl>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                    <TextField
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        label="First Name"
+                        variant="outlined"
+                        color="primary"
+                        type="text"
+                        required
+                    />
+                </FormControl>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                    <TextField
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        label="Last Name"
+                        variant="outlined"
+                        color="primary"
+                        type="text"
+                        required
+                    />
+                </FormControl>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                    <TextField
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        label="Phone"
+                        variant="outlined"
+                        color="primary"
+                        type="text"
+                        required
+                    />
+                </FormControl>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                    <TextField
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        label="Email"
+                        variant="outlined"
+                        color="primary"
+                        type="text"
+                        required
+                    />
+                </FormControl>
+                <FormControl sx={{ m: 1 }} fullWidth>
+                <InputLabel>Type</InputLabel>
+                    <Select
+                        value={type}
+                        label="Type"
+                        required
+                        onChange={(e) => setType(e.target.value)}
+                    >
+                        <MenuItem value={'Patient'}>Patient</MenuItem>
+                        <MenuItem value={'Nurse'}>Nurse</MenuItem>
+                    </Select>
+                </FormControl>
+                <br />
+                <br />
+                <div style={{display: 'flex', justifyContent:'flex-end', width:'100%'}}>
+                    <Button
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        endIcon={<KeyboardArrowRight />}
+                    > Register </Button>
+                </div>
+                </form>
+            </Box>
+        </Container>
+    );
+}
+
+export default Register
