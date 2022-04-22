@@ -47,10 +47,14 @@ const Motivation = (props) => {
     ]
 
     return (
-        <Container>
+        <Container
+            maxWidth="sm"
+        >
             <Carousel showThumbs={false}>
                 {
-                    data && data.motivationsByPatientId.map((motivation, index) => <Item key={index}></Item>)
+                    data && data.motivationsByPatientId.map(
+                        (motivation, index) => <Item key={index} motivation={motivation}></Item>
+                    )
                 }
             </Carousel>
         </Container>
