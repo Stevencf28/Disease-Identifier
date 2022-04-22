@@ -31,6 +31,13 @@ mutation CreateVitals($nurseId: String!, $patientId: String!, $temperature: Stri
   }
 }`;
 
+const ADD_MOTIVATION = gql`
+mutation Mutation($content: String!, $type: String!, $patientId: String!) {
+  createMotivation(content: $content, type: $type, patientId: $patientId) {
+    _id
+  }
+}`;
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -95,10 +102,29 @@ export default function NursePatientActions({showSnackBar}) {
 		}
 	});
 
+  // add patient motivation
+  const [addMotivation, { AddMotivationData, AddMotivationLoading, AddMotivationError }] = useMutation(ADD_MOTIVATION,
+    {
+    onCompleted: data => {
+      console.log(data);
+      showSnackBar({message: 'Add Motivations Successful', severity: 'success'});
+    },
+    onError: error => {
+      showSnackBar({message: 'Add Motivations Failed', severity: 'error'});
+      console.log(error);
+    }
+  });
+
   const processAddVitals = (addVitalsRequest) => {
     // call the mutation
     console.log('addvitalrequest -> ', addVitalsRequest);
 		addVitals({ variables: addVitalsRequest });
+  }
+
+  const processAddMotivation = (addMotivationRequest) => {
+    // call the mutation
+    console.log('add motivation request -> , ', addMotivationRequest);
+    addMotivation({variables: addMotivationRequest})
   }
 
   const handleTabChange = (event, newValue) => {
@@ -142,7 +168,7 @@ export default function NursePatientActions({showSnackBar}) {
                 <VitalsForm patientId={patientId} nurseId={nurseId} processAddVitals={processAddVitals} />
               </TabPanel>
               <TabPanel value={tabValue} index={2}>
-                <SendMotivation />
+                <SendMotivation processAddMotivation={processAddMotivation} patientId={patientId} />
               </TabPanel>
               <TabPanel value={tabValue} index={3}>
                 <PatientAlerts patientId={patientId} />

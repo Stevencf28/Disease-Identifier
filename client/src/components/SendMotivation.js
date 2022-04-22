@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 
-export default function SendMotivation() {
+export default function SendMotivation({processAddMotivation, patientId}) {
   const [motivationType, setMotivationType] = useState(null);
   const [youtubeLink, setYouTubeLink] = useState('');
   const [motivationQoute, setMotivationQuote] = useState('');
@@ -39,11 +39,31 @@ export default function SendMotivation() {
 			isValid = false;
 		}
 
-    if (motivationType === 'textQuote' && motivationQoute.trim() === '') {
+    if (motivationType === 'Quote' && motivationQoute.trim() === '') {
 			setYoutubeLinkError({error: true, errorMsg: "Motivation quote is required"});
 			isValid = false;
 		}
 
+    if (isValid) {
+      const content = (motivationType === 'youtube') ? youtubeLink : motivationQoute;
+
+      const motivationRequest = {
+        type: motivationType,
+        content,
+        patientId
+      }
+
+      // process the request
+      processAddMotivation(motivationRequest);
+
+      resetForm();
+    }
+  }
+
+  const resetForm = () => {
+    setMotivationType(null);
+    setYouTubeLink('');
+    setMotivationQuote('');
   }
 
   const resetErrors = () => {
@@ -64,7 +84,7 @@ export default function SendMotivation() {
             <FormLabel>Motivation Type</FormLabel>
             <RadioGroup value={motivationType} onChange={(e) => setMotivationType(e.target.value)} >
               <FormControlLabel value="youtube" control={<Radio />} label="Youtube Link" />
-              <FormControlLabel value="textQuote" control={<Radio />} label="Tips/Quote" />
+              <FormControlLabel value="Quote" control={<Radio />} label="Tips/Quote" />
             </RadioGroup>
             {motivationTypeError && <FormHelperText>Please select a motivation type</FormHelperText>}
           </FormControl>
@@ -84,7 +104,7 @@ export default function SendMotivation() {
             </FormControl>
           }
 
-          { motivationType === 'textQuote' &&
+          { motivationType === 'Quote' &&
             <FormControl sx={{ m: 1 }} fullWidth>
               <TextField
                 onChange={(e) => setMotivationQuote(e.target.value)}

@@ -22,7 +22,6 @@ export default function VitalsForm({ patientId, nurseId, processAddVitals }) {
   const [bloodPressure, setBloodPressure] = useState('0');
   const [respiratoryRate, setRespiratoryRate] = useState('0');
   const [visitDate, setVisitDate] = useState(null);
-  const [visitDateStr, setVisitDateStr] = useState(null);
 
   const [visitDateError, setVisitDateError] = useState({error: false, errorMsg: ""});
 
