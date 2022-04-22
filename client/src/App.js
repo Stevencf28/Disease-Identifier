@@ -10,10 +10,12 @@ import PatientList from './components/PatientList';
 import NursePatientActions from './components/NursePatientActions';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import Diagnosis from './components/diagnosis';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
 
 function App() {
   const [sbSeverity, setSbSeverity] = useState('success');
@@ -44,6 +46,7 @@ function App() {
           <Route path="/motivation" element={< Motivation />} />
           <Route path="/patients" element={<PatientList />}></Route>
           <Route path="/patientActions" element={<NursePatientActions showSnackBar={showSnackBar} />}></Route>
+          <Route path="/diagnosis" element={< Diagnosis />} />
         </Routes>
 
         <Snackbar
