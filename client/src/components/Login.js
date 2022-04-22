@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { gql, useMutation} from '@apollo/client';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import { 
     Box, 
     Button,
     Container,
     FormControl,
     TextField,
-    Typography 
 } from '@mui/material';
+import { NavLink } from 'react-router-dom';
 import { UserContext } from '../shared/UserContext';
 
 const LOGIN = gql`
@@ -54,12 +53,9 @@ const Login = () => {
 
     return (
         <Container maxWidth="xs">
-            <Typography variant="h5" color="textPrimary">
-                Login
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+            <Box sx={{ mt: 5, display: 'flex', flexWrap: 'wrap' }}>
             <form autoComplete="off" noValidate onSubmit={handleSubmit}>
-                <FormControl sx={{ m: 1 }} fullWidth>
+                <FormControl sx={{ mt: 1 }} fullWidth>
                     <TextField
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -69,7 +65,7 @@ const Login = () => {
                         type="text"
                     />
                 </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
+                <FormControl sx={{ mt: 1 }} fullWidth>
                     <TextField
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -81,14 +77,20 @@ const Login = () => {
                 </FormControl>
                 <br />
                 <br />
-                <div style={{display: 'flex', justifyContent:'flex-end', width:'100%'}}>
-                    <Button
-                        type="submit"
-                        color="primary"
-                        variant="contained"
-                        endIcon={<KeyboardArrowRight />}
-                    > Submit </Button>
-                </div>
+                <Box sx={{mt: 2}} style={{display: 'flex', flexDirection: 'column', textAlign: 'center', width:'100%'}}>
+                    <div>
+                        <Button
+                            type="submit"
+                            color="primary"
+                            variant="contained"
+                        > Login </Button>
+                    </div>
+                    <Box sx={{mt: 1}}>
+                        <NavLink to={`/register`}>
+                            <span>Don't have an account?</span>
+                        </NavLink>
+                    </Box>
+                </Box>
                 </form>
             </Box>
         </Container>

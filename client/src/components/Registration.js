@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import { 
     Box, 
     Button,
@@ -52,13 +51,11 @@ const Register = () => {
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [type, setType] = useState('');
-    const { login } = useContext(UserContext);
     const navigate = useNavigate();
 
     const [signIn, { data, error } ] = useMutation(REGISTER, {
         onCompleted: (data) => {
             console.log('data complete', data);
-            const details = data.register;
             navigate('/');
         },
         onError: (error) => {
@@ -81,13 +78,10 @@ const Register = () => {
     }
 
     return (
-        <Container maxWidth="xs">
-            <Typography variant="h5" color="textPrimary">
-                Register
-            </Typography>
+        <Container sx={{ mt: 5 }} maxWidth="xs">
             <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
             <form autoComplete="off" noValidate onSubmit={handleRegister}>
-                <FormControl sx={{ m: 1 }} fullWidth>
+                <FormControl sx={{ mt: 1 }} fullWidth>
                     <TextField
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -98,7 +92,7 @@ const Register = () => {
                         required
                     />
                 </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
+                <FormControl sx={{ mt: 1 }} fullWidth>
                     <TextField
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -109,7 +103,7 @@ const Register = () => {
                         required
                     />
                 </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
+                <FormControl sx={{ mt: 1 }} fullWidth>
                     <TextField
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
@@ -120,51 +114,55 @@ const Register = () => {
                         required
                     />
                 </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
-                    <TextField
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        label="First Name"
-                        variant="outlined"
-                        color="primary"
-                        type="text"
-                        required
-                    />
-                </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
-                    <TextField
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        label="Last Name"
-                        variant="outlined"
-                        color="primary"
-                        type="text"
-                        required
-                    />
-                </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
-                    <TextField
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        label="Phone"
-                        variant="outlined"
-                        color="primary"
-                        type="text"
-                        required
-                    />
-                </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
-                    <TextField
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Email"
-                        variant="outlined"
-                        color="primary"
-                        type="text"
-                        required
-                    />
-                </FormControl>
-                <FormControl sx={{ m: 1 }} fullWidth>
+                <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
+                    <FormControl sx={{ mr: 1 }} fullWidth>
+                        <TextField
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            label="First Name"
+                            variant="outlined"
+                            color="primary"
+                            type="text"
+                            required
+                        />
+                    </FormControl>
+                    <FormControl sx={{ ml: 1 }} fullWidth>
+                        <TextField
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            label="Last Name"
+                            variant="outlined"
+                            color="primary"
+                            type="text"
+                            required
+                        />
+                    </FormControl>
+                </Box>
+                <Box sx={{ mt: 1, display: 'flex', justifyContent: 'space-between' }}>
+                    <FormControl sx={{ mr: 1 }}>
+                        <TextField
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            label="Phone"
+                            variant="outlined"
+                            color="primary"
+                            type="text"
+                            required
+                        />
+                    </FormControl>
+                    <FormControl sx={{ ml: 1 }}>
+                        <TextField
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            label="Email"
+                            variant="outlined"
+                            color="primary"
+                            type="text"
+                            required
+                        />
+                    </FormControl>
+                </Box>
+                <FormControl sx={{ mt: 1 }} fullWidth>
                 <InputLabel>Type</InputLabel>
                     <Select
                         value={type}
@@ -178,12 +176,17 @@ const Register = () => {
                 </FormControl>
                 <br />
                 <br />
-                <div style={{display: 'flex', justifyContent:'flex-end', width:'100%'}}>
+                <div style={{display: 'flex', justifyContent:'space-around', width:'100%'}}>
+                    <Button
+                        variant='outlined'
+                        type='button'
+                        onClick={() => navigate(-1)}
+                    > Cancel
+                    </Button>
                     <Button
                         type="submit"
                         color="primary"
                         variant="contained"
-                        endIcon={<KeyboardArrowRight />}
                     > Register </Button>
                 </div>
                 </form>

@@ -13,12 +13,12 @@ import Diagnosis from './components/diagnosis';
 import Login from './components/Login';
 import Registration from './components/Registration';
 import Home from './components/Home';
+import Header from './components/extras/Header';
+import Footer from './components/extras/Footer';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-
-
 
 function App() {
   const [sbSeverity, setSbSeverity] = useState('success');
@@ -43,6 +43,7 @@ function App() {
   return (
     <>
     <BrowserRouter>
+      <Header/>
       <div>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -64,6 +65,7 @@ function App() {
         </Snackbar>
 
       </div>
+      <Footer/>
     </BrowserRouter>
     </>
 

@@ -16,17 +16,6 @@ const Home = (props) => {
     }
     return (
         <Container maxWidth='md'>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Typography variant="h5" color="textPrimary">
-                    COMP-308 Emerging Technologies - Group1
-                </Typography>
-                <Button
-                    type="button"
-                    color="primary"
-                    variant="outlined"
-                    onClick={(e) => handleLogout()}
-                > Logout </Button>
-            </Box>
             <Box sx={{ p: 3 }}>
                 { (user && user.auth) ? <PatientList/> : <Login></Login> }
             </Box>
