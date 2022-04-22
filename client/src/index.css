@@ -16,6 +16,8 @@ code {
   background-color: #1976d2;
   padding: 10px;
   margin-bottom: 50px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .navHeaderLink {
