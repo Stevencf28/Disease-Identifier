@@ -5,19 +5,25 @@ import Login from './Login';
 import { UserContext } from '../shared/UserContext';
 import NursePatientActions from './NursePatientActions';
 import PatientList from './PatientList';
+import MyActions from './MyActions';
 
-const Home = (props) => {
+const Home = ({showSnackBar}) => {
     const {user, login, logout} = useContext(UserContext);
 
     console.log('context', user, login, logout)
-    const handleLogout = () => {
-        console.log('logging out');
-        logout();
+
+    const Landing = () => {
+        console.log('user', user);
+        return (
+            <>
+                {user.type === 'Nurse' ? <PatientList/> : <MyActions showSnackBar={showSnackBar}/>}
+            </>
+        );
     }
     return (
         <Container maxWidth='md'>
             <Box sx={{ p: 3 }}>
-                { (user && user.auth) ? <PatientList/> : <Login></Login> }
+                { (user && user.auth) ? <Landing/> : <Login/> }
             </Box>
         </Container>
     );

@@ -47,15 +47,9 @@ function App() {
       <Header/>
       <div>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home showSnackBar={showSnackBar}/>} />
           <Route path="/register" element={<Registration />} />
-          <Route path="/motivation" element={< Motivation />} />
-          <Route path="/diagnosis" element={< Diagnosis />} />
-          <Route path="/patients" element={<PatientList />}></Route>
           <Route path="/patientActions" element={<NursePatientActions showSnackBar={showSnackBar} />}></Route>
-          <Route path="/myActions" element={<MyActions showSnackBar={showSnackBar} />}></Route>
-          <Route path="/diagnosis" element={< Diagnosis />} />
         </Routes>
 
         <Snackbar

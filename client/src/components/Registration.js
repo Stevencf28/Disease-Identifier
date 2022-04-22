@@ -78,8 +78,8 @@ const Register = () => {
     }
 
     return (
-        <Container sx={{ mt: 5 }} maxWidth="xs">
-            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+        <Container maxWidth="xs">
+            <Box sx={{ mt: 5, display: 'flex', flexWrap: 'wrap' }}>
             <form autoComplete="off" noValidate onSubmit={handleRegister}>
                 <FormControl sx={{ mt: 1 }} fullWidth>
                     <TextField
