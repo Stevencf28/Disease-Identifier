@@ -3,8 +3,10 @@ import {
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLList,
-  GraphQLString
+  GraphQLString,
+  GraphQLID
 } from 'graphql';
+import { ObjectId } from 'mongodb';
 import { UserInputError } from 'apollo-server-express';
 import { GraphQLDate, GraphQLEmailAddress } from 'graphql-scalars';
 import random from 'mongoose-simple-random';
@@ -122,31 +124,16 @@ const queryType = new GraphQLObjectType({
           return motivations
         }
       },
-      motivation: {
-        type: MotivationType,
+      motivationsByPatientId: {
+        type: new GraphQLList(MotivationType),
         args: {
-          _id:{
-            type: GraphQLString
+          patientId:{
+            type: GraphQLID
           }
         },
         resolve: async (root, params) => {
-          const motivation = await Motivation.find({_id: params._id}).exec();
-          if (!motivation){
-            throw new Error("Motivation Tip not found.");
-          }
-          return motivation;
-        }
-      },
-      randomMotivation: {
-        type: MotivationType,
-        resolve: async (root, params) => {
-          Motivation.findOneRandom((fetchError, motivation) => {
-            if(!fetchError){
-              return motivation;
-            } else {
-              console.log(fetchError);
-            }
-          })
+          const motivations = await Motivation.find({patientId: params.patientId}).exec();
+          return motivations;
         }
       }
     }
@@ -296,12 +283,18 @@ const mutationType = new GraphQLObjectType({
       createMotivation: {
         type: MotivationType,
         args: {
-          tip:{
+          content:{
             type: new GraphQLNonNull(GraphQLString)
-          }
+          },
+          type:{
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          patientId:{
+            type: new GraphQLNonNull(GraphQLString)
+          },
         },
         resolve: async (root, params, context) => {
-          const newMotivation = new Motivation({params});
+          const newMotivation = new Motivation(params);
           const motivation = await Motivation.create(newMotivation);
           if (!motivation){
             throw UserInputError('Error in creating motivation tip');
