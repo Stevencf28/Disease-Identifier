@@ -7,9 +7,21 @@ import { ApolloProvider } from '@apollo/client';
 import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './shared/UserContext';
 
+const defaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'ignore',
+  },
+  query: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'all',
+  },
+}
+
 const client = new ApolloClient({
   uri: 'http://localhost:8080/graphql',
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  defaultOptions
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

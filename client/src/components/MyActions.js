@@ -100,7 +100,7 @@ export default function MyActions({ showSnackBar }) {
 		{
 		onCompleted: data => {
 			console.log(data);
-			showSnackBar({message: 'Add Vitals Successful', severity: 'success'});
+			// showSnackBar({message: 'Add Vitals Successful', severity: 'success'});
 		},
 		onError: error => {
 			showSnackBar({message: 'Add Vitals Failed', severity: 'error'});
