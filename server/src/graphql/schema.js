@@ -104,7 +104,7 @@ const queryType = new GraphQLObjectType({
           }
         },
         resolve: async (root, params) => {
-          const alerts = await Alert.find({patient: params._id}).exec();
+          const alerts = await Alert.find({patient: params._id}).populate('patient').exec();
           return alerts;
         }
       },
