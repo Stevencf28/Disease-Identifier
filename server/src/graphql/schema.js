@@ -179,7 +179,7 @@ const mutationType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString)
           },
           email: {
-            type: new GraphQLNonNull(GraphQLEmailAddress)
+            type: new GraphQLNonNull(GraphQLString)
           },
           type: {
             type: new GraphQLNonNull(GraphQLString)
