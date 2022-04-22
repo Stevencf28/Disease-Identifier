@@ -5,18 +5,21 @@ import {
   Route } from 'react-router-dom'
 import './App.css';
 import Motivation from './components/Motivation';
-import Index from './components/Index';
 import PatientList from './components/PatientList';
 import MyActions from './components/MyActions';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Diagnosis from './components/Diagnosis'
 import NursePatientActions from './components/NursePatientActions';
+import Login from './components/Login';
+import Registration from './components/Registration';
+import Home from './components/Home';
+import Header from './components/extras/Header';
+import Footer from './components/extras/Footer';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-
 
 function App() {
   const [sbSeverity, setSbSeverity] = useState('success');
@@ -41,15 +44,12 @@ function App() {
   return (
     <>
     <BrowserRouter>
+      <Header/>
       <div>
         <Routes>
-          <Route path="/" element={< Index />} />
-          <Route path="/motivation" element={< Motivation />} />
-          <Route path="/diagnosis" element={< Diagnosis />} />
-          <Route path="/patients" element={<PatientList />}></Route>
+          <Route path="/" element={<Home showSnackBar={showSnackBar}/>} />
+          <Route path="/register" element={<Registration />} />
           <Route path="/patientActions" element={<NursePatientActions showSnackBar={showSnackBar} />}></Route>
-          <Route path="/myActions" element={<MyActions showSnackBar={showSnackBar} />}></Route>
-          <Route path="/diagnosis" element={< Diagnosis />} />
         </Routes>
 
         <Snackbar
@@ -62,6 +62,7 @@ function App() {
         </Snackbar>
 
       </div>
+      <Footer/>
     </BrowserRouter>
     </>
 

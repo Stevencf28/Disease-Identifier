@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -13,6 +13,7 @@ import PatientVitals from './PatientVitals';
 import VitalsForm from './VitalsForm';
 import SendMotivation from './SendMotivation';
 import PatientAlerts from './PatientAlerts';
+import { UserContext } from '../shared/UserContext';
 
 const GET_PATIENT = gql`
 query GetPatient($patientId: String) {
@@ -67,10 +68,12 @@ function a11yProps(index) {
 
 // todo: need to get nurse id on login
 export default function NursePatientActions({showSnackBar}) {
-  const [patient, setPatient] = useState(null);
+  const [patient, setPatient] = useState(undefined);
   const { state } = useLocation();
+  const { user } = useContext(UserContext);
   const patientId = state.patientId;
-  const nurseId = '62606fee5c4d8ec84f4b516c'; // todo: get from login
+  const nurseId = user.userId;
+  console.log('patient nurse', patientId, nurseId);
   const [tabValue, setTabValue] = useState(0); 
 
   // get the patient name
